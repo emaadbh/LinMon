@@ -82,10 +82,7 @@ func createOutputBoxes(client *ssh.Client, app *tview.Application) []tview.Primi
 func createOptionsList(app *tview.Application) *tview.List {
 	list := tview.NewList()
 	list.AddItem("List servers", "", 'a', nil).
-		AddItem("MODE Pro", "Not implemented :)", 'b', nil).
-		AddItem("Quit", "Press to exit", 'q', func() {
-			app.Stop()
-		})
+		AddItem("MODE Pro", "Not implemented :)", 'b', nil)
 	return list
 }
 
