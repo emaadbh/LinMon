@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+// Ssh establishes an SSH connection using the provided flags and returns the server address, SSH client, and any error encountered.
 func Ssh() (string, *ssh.Client, error) {
 	user, server, password, err := parseSSHFlag()
 	if err != nil {
@@ -19,65 +20,74 @@ func Ssh() (string, *ssh.Client, error) {
 	return connectSSH(*user, *server, password)
 }
 
+// parseSSHFlag parses the command-line flags for SSH connection details and returns the username, server, and password.
 func parseSSHFlag() (*string, *string, *string, error) {
+	// Define command-line flags for SSH connection and password
 	sshFlag := flag.String("ssh", "", "Specify the SSH connection in the format username@server")
 	passwordFlag := flag.String("password", "", "Specify the password for the SSH connection")
 
+	// Parse the command-line flags
 	flag.Parse()
 
+	// Check if the SSH flag is provided
 	if *sshFlag == "" {
 		return nil, nil, nil, fmt.Errorf("Error: No SSH connection specified")
 	}
 
+	// Split the SSH flag into username and server parts
 	sshParts := strings.Split(*sshFlag, "@")
-
 	if len(sshParts) != 2 {
-		return nil, nil, nil, fmt.Errorf("Error: No SSH connection specified")
+		return nil, nil, nil, fmt.Errorf("Error: Invalid SSH connection format")
 	}
 
 	username := sshParts[0]
 	server := sshParts[1]
 
 	return &username, &server, passwordFlag, nil
-
 }
 
+// parseSSHConfigYml is a placeholder function for parsing SSH configuration from a YAML file.
 func parseSSHConfigYml() (*string, *string, *string, error) {
-
 	return nil, nil, nil, fmt.Errorf("Not implemented")
 }
 
+// connectSSH establishes an SSH connection to the specified server using the provided username and password.
 func connectSSH(username string, server string, password *string) (string, *ssh.Client, error) {
 	var signers []ssh.Signer
 	var auth []ssh.AuthMethod
 
+	// Determine the authentication method based on the presence of a password
 	if password == nil || *password == "" {
-
+		// Use SSH agent if no password is provided
 		agentConn, err := pageant.NewConn()
+		if err != nil {
+			log.Fatalf("Error connecting to pageant: %v", err)
+		}
 
 		sshAgent := agent.NewClient(agentConn)
 		signers, err = sshAgent.Signers()
-
 		if err != nil {
 			log.Fatalf("Error loading private key: %v", err)
 		}
 
 		auth = []ssh.AuthMethod{
-			//ssh.Password(password),
 			ssh.PublicKeys(signers...),
 		}
 	} else {
+		// Use password authentication if a password is provided
 		auth = []ssh.AuthMethod{
 			ssh.Password(*password),
 		}
 	}
 
+	// Configure the SSH client
 	conf := &ssh.ClientConfig{
 		User:            username,
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Auth:            auth,
 	}
 
+	// Dial the SSH server
 	client, errSSH := ssh.Dial("tcp", server+":22", conf)
 	if errSSH != nil {
 		return server, nil, errSSH
@@ -86,13 +96,15 @@ func connectSSH(username string, server string, password *string) (string, *ssh.
 	return server, client, nil
 }
 
+// RunCommand executes a command on the remote SSH server and returns the output or any error encountered.
 func RunCommand(client *ssh.Client, command string) (string, error) {
 	session, err := client.NewSession()
 	if err != nil {
 		return "", err
 	}
-	defer session.Close()
+	defer session.Close() // Ensure the session is closed after execution
 
+	// Execute the command and capture the output
 	output, err := session.CombinedOutput(command)
 	if err != nil {
 		return "", err
