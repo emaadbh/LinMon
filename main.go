@@ -53,7 +53,7 @@ func getDataHosts() (user *string, host *string, password *string) {
 func createOutputBoxes(client *ssh.Client, app *tview.Application) []tview.Primitive {
 	return []tview.Primitive{
 		createOutputBox(app, "Network", monitoring.NetworkUpdater, client),
-		createOutputBox(app, "TOP", monitoring.CpuUpdater, client),
+		createOutputBox(app, "Proc Status", monitoring.CpuUpdater, client),
 		createOutputBox(app, "Journal LOG", monitoring.JournalUpdater, client),
 		createOutputBox(app, "WebServer", monitoring.WebServerUpdater, client),
 	}
