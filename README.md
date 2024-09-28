@@ -37,7 +37,7 @@ servers:
 ```
 
 
-#### Key-Based Authentication with Pageant
+### Key-Based Authentication with Pageant
 If Pageant is running on your system and your private SSH key is loaded, the package will automatically use the key for authentication. There is no need to manually input a password in this case.
 
 To use Pageant:
