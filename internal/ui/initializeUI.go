@@ -6,9 +6,9 @@ import (
 	"log"
 )
 
-func InitializeUI(app *tview.Application, outBoxes []tview.Primitive) {
+func InitializeUI(nameHost string, app *tview.Application, outBoxes []tview.Primitive) {
 	focusedIndex := 0
-	mainFlex, focusableItems := setupUI(app, outBoxes)
+	mainFlex, focusableItems := setupUI(nameHost, app, outBoxes)
 
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
@@ -27,21 +27,21 @@ func InitializeUI(app *tview.Application, outBoxes []tview.Primitive) {
 }
 
 // setupUI initializes the user interface components and returns the main layout and focusable items
-func setupUI(app *tview.Application, outBoxes []tview.Primitive) (*tview.Frame, []tview.Primitive) {
+func setupUI(nameHost string, app *tview.Application, outBoxes []tview.Primitive) (*tview.Frame, []tview.Primitive) {
 	outputBoxes := outBoxes
 	list := createOptionsList(app)
 
 	focusableItems := append(outputBoxes, list)
 	flex := createMainFlex(outputBoxes, list)
-	mainFlex := createFrame(flex)
+	mainFlex := createFrame(flex, nameHost)
 
 	return mainFlex, focusableItems
 }
 
 // createFrame creates a new frame for the application UI with server information
-func createFrame(mainFlex *tview.Flex) *tview.Frame {
+func createFrame(mainFlex *tview.Flex, nameHost string) *tview.Frame {
 	return tview.NewFrame(mainFlex).
-		AddText("F10: Exit   F1: LIST VPS   TAB: Change focus", true, tview.AlignLeft, tcell.ColorRed)
+		AddText(nameHost+" F10: Exit   F1: LIST VPS   TAB: Change focus", true, tview.AlignLeft, tcell.ColorRed)
 }
 
 // createOptionsList creates a list of options for user interaction

@@ -10,8 +10,29 @@ import (
 )
 
 func main() {
-	// Connect to SSH server
-	_, client, err := ssh_con.Ssh()
+	var host *string
+	var user *string
+	var password *string
+
+	user, host, password, err := ssh_con.ParseSSHFlag()
+
+	if err != nil {
+		configs, errYaml := ssh_con.ParseSSHConfigYml()
+		if errYaml != nil {
+			log.Fatalf("SSH connection error: %v", err)
+			return
+		}
+
+		for _, config := range configs.Servers {
+			host = &config.IP
+			user = &config.User
+			password = &config.Password
+			break
+		}
+	}
+
+	client, err := ssh_con.ConnectSSH(*user, *host, password)
+
 	if err != nil {
 		log.Fatalf("SSH connection error: %v", err)
 		return
@@ -20,7 +41,7 @@ func main() {
 
 	outputBoxes := createOutputBoxes(client, app)
 
-	ui.InitializeUI(app, outputBoxes)
+	ui.InitializeUI(*host, app, outputBoxes)
 }
 
 func createOutputBoxes(client *ssh.Client, app *tview.Application) []tview.Primitive {

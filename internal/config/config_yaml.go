@@ -12,6 +12,7 @@ type Config struct {
 
 type Server struct {
 	IP       string `yaml:"ip"`
+	User     string `yaml:"user"`
 	Port     int    `yaml:"port"`
 	Password string `yaml:"password"`
 }

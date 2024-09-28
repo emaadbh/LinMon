@@ -1,6 +1,7 @@
 package ssh_con
 
 import (
+	"LinMon/internal/config"
 	"flag"
 	"fmt"
 	"github.com/kbolino/pageant"
@@ -10,18 +11,8 @@ import (
 	"strings"
 )
 
-// Ssh establishes an SSH connection using the provided flags and returns the server address, SSH client, and any error encountered.
-func Ssh() (string, *ssh.Client, error) {
-	user, server, password, err := parseSSHFlag()
-	if err != nil {
-		return *server, nil, err
-	}
-
-	return connectSSH(*user, *server, password)
-}
-
 // parseSSHFlag parses the command-line flags for SSH connection details and returns the username, server, and password.
-func parseSSHFlag() (*string, *string, *string, error) {
+func ParseSSHFlag() (*string, *string, *string, error) {
 	// Define command-line flags for SSH connection and password
 	sshFlag := flag.String("ssh", "", "Specify the SSH connection in the format username@server")
 	passwordFlag := flag.String("password", "", "Specify the password for the SSH connection")
@@ -47,12 +38,17 @@ func parseSSHFlag() (*string, *string, *string, error) {
 }
 
 // parseSSHConfigYml is a placeholder function for parsing SSH configuration from a YAML file.
-func parseSSHConfigYml() (*string, *string, *string, error) {
-	return nil, nil, nil, fmt.Errorf("Not implemented")
+func ParseSSHConfigYml() (*config.Config, error) {
+	configs, err := config.YamlLoad()
+	if err != nil {
+		return nil, fmt.Errorf("Not implemented")
+	}
+
+	return configs, nil
 }
 
 // connectSSH establishes an SSH connection to the specified server using the provided username and password.
-func connectSSH(username string, server string, password *string) (string, *ssh.Client, error) {
+func ConnectSSH(username string, server string, password *string) (*ssh.Client, error) {
 	var signers []ssh.Signer
 	var auth []ssh.AuthMethod
 
@@ -90,10 +86,10 @@ func connectSSH(username string, server string, password *string) (string, *ssh.
 	// Dial the SSH server
 	client, errSSH := ssh.Dial("tcp", server+":22", conf)
 	if errSSH != nil {
-		return server, nil, errSSH
+		return nil, errSSH
 	}
 
-	return server, client, nil
+	return client, nil
 }
 
 // RunCommand executes a command on the remote SSH server and returns the output or any error encountered.
