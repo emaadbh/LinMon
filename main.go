@@ -14,6 +14,22 @@ func main() {
 	var user *string
 	var password *string
 
+	user, host, password = getDataHosts()
+
+	client, err := ssh_con.ConnectSSH(*user, *host, password)
+	if err != nil {
+		log.Fatalf("SSH connection error: %v", err)
+		return
+	}
+	app := tview.NewApplication()
+
+	outputBoxes := createOutputBoxes(client, app)
+
+	ui.InitializeUI(*host, app, outputBoxes)
+}
+
+func getDataHosts() (user *string, host *string, password *string) {
+
 	user, host, password, err := ssh_con.ParseSSHFlag()
 
 	if err != nil {
@@ -31,17 +47,7 @@ func main() {
 		}
 	}
 
-	client, err := ssh_con.ConnectSSH(*user, *host, password)
-
-	if err != nil {
-		log.Fatalf("SSH connection error: %v", err)
-		return
-	}
-	app := tview.NewApplication()
-
-	outputBoxes := createOutputBoxes(client, app)
-
-	ui.InitializeUI(*host, app, outputBoxes)
+	return user, host, password
 }
 
 func createOutputBoxes(client *ssh.Client, app *tview.Application) []tview.Primitive {
