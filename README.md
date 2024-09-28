@@ -12,11 +12,30 @@ Linux Monitoring (LinMon)** is a lightweight, command-line tool written in Go, d
 
 ## How to Run
 
-To execute LinMon, use the following command, replacing the SSH connection details with your server's:
+### Method 1: Using Command-Line Parameters
+To execute LinMon and connect to a Linux server via SSH, you can use the following command, replacing the SSH connection details with your server's information:
+
 
 ```bash
 go run main.go --ssh root@192.168.1.111 --password 12345
 ```
+### Method 2: Using config.yml File
+Alternatively, you can use a configuration file to manage your server connection details. This allows you to avoid passing parameters like --ssh and --password directly on the command line. The config.yml file should be located in the configs/ directory and structured as follows:
+
+```yaml
+servers:
+  vps1_web:
+    user: root
+    ip: 192.168.1.1
+    port: 22
+    password: pass123
+  vps2_db:
+    user: root
+    ip: 192.168.1.2
+    port: 22
+    password: pass456
+```
+
 
 #### Key-Based Authentication with Pageant
 If Pageant is running on your system and your private SSH key is loaded, the package will automatically use the key for authentication. There is no need to manually input a password in this case.
@@ -24,6 +43,8 @@ If Pageant is running on your system and your private SSH key is loaded, the pac
 To use Pageant:
 Ensure Pageant is running and your key is loaded.
 Simply run the application with the --ssh flag. The package will use the key-based authentication method without needing the --password flag.
+
+
 
 ## Upcoming Features
 
