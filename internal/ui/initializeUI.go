@@ -29,10 +29,9 @@ func InitializeUI(nameHost string, app *tview.Application, outBoxes []tview.Prim
 // setupUI initializes the user interface components and returns the main layout and focusable items
 func setupUI(nameHost string, app *tview.Application, outBoxes []tview.Primitive) (*tview.Frame, []tview.Primitive) {
 	outputBoxes := outBoxes
-	list := createOptionsList(app)
 
-	focusableItems := append(outputBoxes, list)
-	flex := createMainFlex(outputBoxes, list)
+	focusableItems := append(outputBoxes)
+	flex := createMainFlex(outputBoxes)
 	mainFlex := createFrame(flex, nameHost)
 
 	return mainFlex, focusableItems
@@ -44,20 +43,11 @@ func createFrame(mainFlex *tview.Flex, nameHost string) *tview.Frame {
 		AddText(nameHost+" F10: Exit   F1: LIST VPS   TAB: Change focus", true, tview.AlignLeft, tcell.ColorRed)
 }
 
-// createOptionsList creates a list of options for user interaction
-func createOptionsList(app *tview.Application) *tview.List {
-	list := tview.NewList()
-	list.AddItem("List servers", "", 'a', nil).
-		AddItem("MODE Pro", "Not implemented :)", 'b', nil)
-	return list
-}
-
 // createMainFlex creates the main layout of the UI using the output boxes and options list
-func createMainFlex(outputBoxes []tview.Primitive, list *tview.List) *tview.Flex {
+func createMainFlex(outputBoxes []tview.Primitive) *tview.Flex {
 	rowFlex := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(outputBoxes[0], 0, 2, false).
-		AddItem(outputBoxes[1], 0, 2, false).
-		AddItem(list, 5, 1, true)
+		AddItem(outputBoxes[1], 0, 2, false)
 
 	row2Flex := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(outputBoxes[2], 0, 1, false).
