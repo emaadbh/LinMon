@@ -1,0 +1,9 @@
+servers:
+  vps1_web:
+    ip: 192.168.1.1
+    port: 22
+    password: pass123
+  vps2_db:
+    ip: 192.168.1.2
+    port: 22
+    password: pass456

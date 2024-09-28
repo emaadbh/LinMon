@@ -3,49 +3,34 @@ package monitoring
 import (
 	"LinMon/internal/ssh_con"
 	"fmt"
-	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
 	"golang.org/x/crypto/ssh"
 	"strings"
-	"time"
 )
 
-func WebServerOutput(client *ssh.Client, app *tview.Application, outputBox *tview.TextView) {
-	webserver := checkWebServer(client)
+func WebServerUpdater(client *ssh.Client) string {
+	webCMD := webserver(client)
+
+	out, err := ssh_con.RunCommand(client, webCMD)
+	if err != nil {
+		out = fmt.Sprintf("Error: %v", err)
+	}
+
+	return out
+}
+
+// todo: need improvement
+func webserver(client *ssh.Client) string {
 	cmd := "journalctl -u nginx -n 20 -e"
 
-	if webserver == -1 {
-		outputBox.SetTitle("WEBSERVER: OFF")
+	webserverStatus := checkWebServer(client)
+	if webserverStatus == -1 {
 		cmd = "echo 'WEBSERVER: OFF'"
 
-	} else if webserver == 0 {
-		outputBox.SetTitle("WEBSERVER: ON (Apache)")
+	} else if webserverStatus == 0 {
 		cmd = "journalctl -u apache2 -n 20 -e"
-
-	} else if webserver == 1 {
-		outputBox.SetTitle("WEBSERVER: ON (Nginx)")
 	}
-	outputBox.SetTitleAlign(tview.AlignLeft).
-		SetTitleColor(tcell.ColorRed).
-		SetBackgroundColor(tcell.ColorGold).
-		SetBorder(true)
 
-	go func() {
-		for {
-			out, err := ssh_con.RunCommand(client, cmd)
-
-			if err != nil {
-				out = fmt.Sprintf("Error: %v", err)
-			}
-			outputBox.SetText(out)
-
-			app.Draw()
-			time.Sleep(1 * time.Second)
-		}
-
-	}()
-
-	outputBox.SetBorder(true)
+	return cmd
 }
 
 func checkWebServer(client *ssh.Client) int {
