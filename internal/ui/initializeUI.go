@@ -9,6 +9,7 @@ import (
 func InitializeUI(nameHost string, app *tview.Application, outBoxes []tview.Primitive) {
 	focusedIndex := 0
 	mainFlex, focusableItems := setupUI(nameHost, app, outBoxes)
+	isFullScreen := false
 
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
@@ -17,6 +18,15 @@ func InitializeUI(nameHost string, app *tview.Application, outBoxes []tview.Prim
 		case tcell.KeyTab:
 			focusedIndex = (focusedIndex + 1) % len(focusableItems)
 			app.SetFocus(focusableItems[focusedIndex])
+		case tcell.KeyF2:
+			if isFullScreen {
+				mainFlex, focusableItems = setupUI(nameHost, app, outBoxes)
+				app.SetRoot(mainFlex, true)
+			} else {
+				fullScreenItem := focusableItems[focusedIndex]
+				app.SetRoot(fullScreenItem, true)
+			}
+			isFullScreen = !isFullScreen
 		}
 		return event
 	})
@@ -40,14 +50,14 @@ func setupUI(nameHost string, app *tview.Application, outBoxes []tview.Primitive
 // createFrame creates a new frame for the application UI with server information
 func createFrame(mainFlex *tview.Flex, nameHost string) *tview.Frame {
 	return tview.NewFrame(mainFlex).
-		AddText(nameHost+" F10: Exit   F1: LIST VPS   TAB: Change focus", true, tview.AlignLeft, tcell.ColorRed)
+		AddText(nameHost+" F10: Exit   F1: LIST VPS   TAB: Change focus  F2: fullscreen item", true, tview.AlignLeft, tcell.ColorRed)
 }
 
 // createMainFlex creates the main layout of the UI using the output boxes and options list
 func createMainFlex(outputBoxes []tview.Primitive) *tview.Flex {
 	rowFlex := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(outputBoxes[0], 0, 2, false).
-		AddItem(outputBoxes[1], 0, 2, false)
+		AddItem(outputBoxes[0], 0, 1, false).
+		AddItem(outputBoxes[1], 0, 1, false)
 
 	row2Flex := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(outputBoxes[2], 0, 1, false).
@@ -55,5 +65,5 @@ func createMainFlex(outputBoxes []tview.Primitive) *tview.Flex {
 
 	return tview.NewFlex().SetDirection(tview.FlexColumn).
 		AddItem(rowFlex, 0, 1, true).
-		AddItem(row2Flex, 0, 2, false)
+		AddItem(row2Flex, 0, 1, false)
 }
