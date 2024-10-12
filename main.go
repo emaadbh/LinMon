@@ -56,6 +56,7 @@ func createOutputBoxes(client *ssh.Client, app *tview.Application) []tview.Primi
 		createOutputBox(app, "Proc Status", monitoring.CpuUpdater, client),
 		createOutputBox(app, "Journal LOG", monitoring.JournalUpdater, client),
 		createOutputBox(app, "WebServer", monitoring.WebServerUpdater, client),
+		createOutputBox(app, "Services", monitoring.ServicesUpdater, client),
 	}
 }
 
