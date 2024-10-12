@@ -63,7 +63,11 @@ func createMainFlex(outputBoxes []tview.Primitive) *tview.Flex {
 		AddItem(outputBoxes[2], 0, 1, false).
 		AddItem(outputBoxes[3], 0, 1, false)
 
+	row3Flex := tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(outputBoxes[4], 0, 1, false)
+
 	return tview.NewFlex().SetDirection(tview.FlexColumn).
+		AddItem(row3Flex, 0, 1, false).
 		AddItem(rowFlex, 0, 1, true).
-		AddItem(row2Flex, 0, 1, false)
+		AddItem(row2Flex, 0, 2, false)
 }
