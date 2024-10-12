@@ -56,7 +56,7 @@ func createFrame(mainFlex *tview.Flex, nameHost string) *tview.Frame {
 // createMainFlex creates the main layout of the UI using the output boxes and options list
 func createMainFlex(outputBoxes []tview.Primitive) *tview.Flex {
 	rowFlex := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(outputBoxes[0], 0, 1, false).
+		AddItem(outputBoxes[4], 0, 1, false).
 		AddItem(outputBoxes[1], 0, 1, false)
 
 	row2Flex := tview.NewFlex().SetDirection(tview.FlexRow).
@@ -64,10 +64,13 @@ func createMainFlex(outputBoxes []tview.Primitive) *tview.Flex {
 		AddItem(outputBoxes[3], 0, 1, false)
 
 	row3Flex := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(outputBoxes[4], 0, 1, false)
+		AddItem(outputBoxes[0], 0, 1, false)
 
-	return tview.NewFlex().SetDirection(tview.FlexColumn).
-		AddItem(row3Flex, 0, 1, false).
+	row3ColumnFlex := tview.NewFlex().SetDirection(tview.FlexColumn).
 		AddItem(rowFlex, 0, 1, true).
 		AddItem(row2Flex, 0, 2, false)
+
+	return tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(row3Flex, 0, 1, true).
+		AddItem(row3ColumnFlex, 0, 2, false)
 }
